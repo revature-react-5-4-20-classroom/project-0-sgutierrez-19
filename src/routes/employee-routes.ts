@@ -1,16 +1,17 @@
 import express, { Router } from 'express';
 import { getUserById, createReim } from '../repository/employee';
 import { Reimbursement } from '../models/reimbursement';
+import { isAuthenticated } from '../middleware/authenticate';
 
 const router: Router = express.Router();
+
+router.use(isAuthenticated([`Finance Manager`, `Employee`, `Administrator`]));
 
 // @ '/users/:id' GET
 router.get('/users/:id', async function (req, res) {
   let id: number = +req.params.id;
   let userId: number = req.session && req.session.user.id;
-  if (!id || !userId) {
-    res.status(401).send(`You must be logged in to view user records.`);
-  } else if (isNaN(id)) {
+  if (isNaN(id)) {
     res.status(400).send(`You need to include an valid number-ID`);
   } else {
     try {
@@ -32,9 +33,7 @@ router.get('/users/:id', async function (req, res) {
 // @ '/reimbursements' POST
 router.post('/reimbursements', async function (req, res) {
   let { amount, description, type } = req.body;
-  if (!req.session) {
-    res.status(401).send(`You need to be logged in to create a request`);
-  } else if (!amount || !description || !type) {
+  if (!amount || !description || !type) {
     res
       .status(400)
       .send(

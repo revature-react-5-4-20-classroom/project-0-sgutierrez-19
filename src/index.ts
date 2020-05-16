@@ -12,10 +12,10 @@ app.use(bodyparser.json());
 app.use(sessionMiddleware);
 
 // Bring in api routes
+app.use('/', authentication);
 // app.use('/api/admin', require('../routes/admin-routes'));
 app.use('/', employees);
 // app.use('/api/manager', require('../routes/manager-routes'));
-app.use('/', authentication);
 
 app.listen(PORT, () => {
   console.log(`Server is currently running on localhost:${PORT}`);
