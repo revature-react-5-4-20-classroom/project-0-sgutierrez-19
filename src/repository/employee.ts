@@ -3,18 +3,19 @@ import { User } from '../models/user';
 import { PoolClient, QueryResult } from 'pg';
 import { Reimbursement } from '../models/reimbursement';
 
-// LOGIN function
-export async function getUserById(id: number, userId: number): Promise<User> {
+// Find user by their ID function
+export async function getUserById(id: number): Promise<User> {
   let client: PoolClient = await connectionPool.connect();
   try {
-    let currUserResult = await client.query(
+    let result: QueryResult;
+    result = await client.query(
       `SELECT users.id, username, "password", first_name, last_name, email, roles.role 
         FROM users
         INNER JOIN roles ON users."role" = roles."role"
         WHERE users.id = $1`,
-      [userId]
+      [id]
     );
-    let currUser: User = currUserResult.rows.map((u) => {
+    let matchingUser = result.rows.map((u) => {
       return new User(
         u.id,
         u.username,
@@ -24,63 +25,11 @@ export async function getUserById(id: number, userId: number): Promise<User> {
         u.email,
         u.role
       );
-    })[0];
-    if (currUser.id !== id) {
-      throw new Error(`Only Finance Managers may view others' User records.`);
-    } else if (currUser.role !== 'Finance Manger') {
-      // can view their own ID - everyone
-      let result: QueryResult;
-      result = await client.query(
-        `SELECT users.id, username, "password", first_name, last_name, email, roles.role 
-            FROM users
-            INNER JOIN roles ON users."role" = roles."role"
-            WHERE users.id = $1`,
-        [id]
-      );
-
-      let matchingUser = result.rows.map((u) => {
-        return new User(
-          u.id,
-          u.username,
-          u.password,
-          u.first_name,
-          u.last_name,
-          u.email,
-          u.role
-        );
-      });
-      if (matchingUser.length > 0 && matchingUser) {
-        return matchingUser[0];
-      } else {
-        throw new Error(`Couldn't find User with the Id: ${id}`);
-      }
+    });
+    if (matchingUser.length > 0 && matchingUser) {
+      return matchingUser[0];
     } else {
-      // can view anyone - finance manger only
-      let result: QueryResult;
-      result = await client.query(
-        `SELECT users.id, username, "password", first_name, last_name, email, roles.role 
-        FROM users
-        INNER JOIN roles ON users."role" = roles."role"
-        WHERE users.id = $1`,
-        [id]
-      );
-
-      let matchingUser = result.rows.map((u) => {
-        return new User(
-          u.id,
-          u.username,
-          u.password,
-          u.first_name,
-          u.last_name,
-          u.email,
-          u.role
-        );
-      });
-      if (matchingUser.length > 0 && matchingUser) {
-        return matchingUser[0];
-      } else {
-        throw new Error(`Couldn't find User with the Id: ${id}`);
-      }
+      throw new Error(`Couldn't find User with the Id: ${id}`);
     }
   } catch (e) {
     throw new Error(`You are not authorized to view this user record. ${e}`);
@@ -148,6 +97,44 @@ export async function createReim(
         r.id
       );
     })[0];
+  } catch (e) {
+    throw new Error(e);
+  } finally {
+    client && client.release();
+  }
+}
+
+export async function findReimById(author: number): Promise<Reimbursement[]> {
+  let client: PoolClient = await connectionPool.connect();
+  try {
+    let result: QueryResult = await client.query(
+      `SELECT r.id, u.first_name || ' ' || u.last_name AS "author",
+      description, amount, rt."type", rs."status", date_submitted, date_resolved
+      FROM reimbursements r
+      INNER JOIN users u ON r.author = u.id
+      LEFT JOIN reimbursement_type rt ON r."type"= rt.id
+      LEFT JOIN reimbursement_status rs ON r."status" = rs.id
+      WHERE r.id = $1;`,
+      [author]
+    );
+    let reimArray = result.rows.map((r) => {
+      return new Reimbursement(
+        r.author,
+        r.amount,
+        r.date_submitted,
+        r.description,
+        r.status,
+        r.type,
+        r.id
+      );
+    });
+    if (reimArray.length === 0) {
+      throw new Error(
+        `Could not find any reimbursement requests for user ID#${author}`
+      );
+    } else {
+      return reimArray;
+    }
   } catch (e) {
     throw new Error(e);
   } finally {

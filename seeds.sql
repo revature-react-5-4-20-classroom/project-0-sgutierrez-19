@@ -4,7 +4,7 @@ CREATE TABLE roles (
 );
 
 INSERT INTO roles("role")
-VALUES('Administrator'), ('Finance Manger'), ('Employee');
+VALUES('Administrator'), ('Finance Manager'), ('Employee');
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -19,7 +19,7 @@ CREATE TABLE users (
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
 VALUES ('adminuser', 'pworda', 'John', 'Doe', 'admin@email.com', 'Administrator'); -- 1
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
-VALUES ('fmanuser', 'pwordf', 'Maggie', 'Sue', 'fman@email.com', 'Finance Manger'); -- 2
+VALUES ('fmanuser', 'pwordf', 'Maggie', 'Sue', 'fman@email.com', 'Finance Manager'); -- 2
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
 VALUES ('empuser', 'pworde', 'Zach', 'Allen', 'emp@email.com', 'Employee'); -- 3
 
