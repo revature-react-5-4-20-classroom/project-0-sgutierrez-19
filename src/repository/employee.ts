@@ -104,6 +104,7 @@ export async function createReim(
   }
 }
 
+// GET reimbursements by ID
 export async function findReimById(author: number): Promise<Reimbursement[]> {
   let client: PoolClient = await connectionPool.connect();
   try {
@@ -114,7 +115,7 @@ export async function findReimById(author: number): Promise<Reimbursement[]> {
       INNER JOIN users u ON r.author = u.id
       LEFT JOIN reimbursement_type rt ON r."type"= rt.id
       LEFT JOIN reimbursement_status rs ON r."status" = rs.id
-      WHERE r.id = $1;`,
+      WHERE r.author = $1;`,
       [author]
     );
     let reimArray = result.rows.map((r) => {
