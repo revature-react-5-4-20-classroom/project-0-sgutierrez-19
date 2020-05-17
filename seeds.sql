@@ -13,15 +13,15 @@ CREATE TABLE users (
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     email TEXT NOT NULL,
-    "role" TEXT NOT NULL REFERENCES "roles"("role")
+    "role" INTEGER NOT NULL REFERENCES "roles"(id)
 );
 
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
-VALUES ('adminuser', 'pworda', 'John', 'Doe', 'admin@email.com', 'Administrator'); -- 1
+VALUES ('adminuser', 'pworda', 'John', 'Doe', 'admin@email.com', 1); -- 1
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
-VALUES ('fmanuser', 'pwordf', 'Maggie', 'Sue', 'fman@email.com', 'Finance Manager'); -- 2
+VALUES ('fmanuser', 'pwordf', 'Maggie', 'Sue', 'fman@email.com', 2); -- 2
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
-VALUES ('empuser', 'pworde', 'Zach', 'Allen', 'emp@email.com', 'Employee'); -- 3
+VALUES ('empuser', 'pworde', 'Zach', 'Allen', 'emp@email.com', 3); -- 3
 
 CREATE TABLE reimbursement_status (
     id SERIAL PRIMARY KEY,

@@ -10,8 +10,9 @@ export async function verifyUsernamePassword(
   try {
     let result: QueryResult;
     result = await client.query(
-      `SELECT * FROM users
-        WHERE username = $1 AND password = $2;`,
+      `SELECT users.id, username, "password", first_name, last_name, email, roles."role" FROM users
+      INNER JOIN roles ON users."role" = roles.id
+      WHERE username = $1 AND password = $2;`,
       [username, password]
     );
     let matchingUser = result.rows.map((u) => {
