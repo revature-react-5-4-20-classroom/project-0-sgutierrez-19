@@ -9,9 +9,9 @@ export async function getUserById(id: number): Promise<User> {
   try {
     let result: QueryResult;
     result = await client.query(
-      `SELECT users.id, username, "password", first_name, last_name, email, roles.role 
+      `SELECT users.id, username, "password", first_name, last_name, email, roles."role" 
         FROM users
-        INNER JOIN roles ON users."role" = roles."role"
+        INNER JOIN roles ON users."role" = roles.id
         WHERE users.id = $1`,
       [id]
     );

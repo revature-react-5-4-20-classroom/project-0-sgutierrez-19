@@ -4,6 +4,7 @@ import bodyparser from 'body-parser';
 import { sessionMiddleware } from './middleware/sessionMiddleware';
 import authentication from './routes/authentication';
 import employees from './routes/employee-routes';
+import admin from './routes/admin-routes';
 
 const app: Application = express();
 const PORT: number = 3003;
@@ -13,7 +14,7 @@ app.use(sessionMiddleware);
 
 // Bring in api routes
 app.use('/', authentication);
-// app.use('/api/admin', require('../routes/admin-routes'));
+app.use('/', admin);
 app.use('/', employees);
 // app.use('/api/manager', require('../routes/manager-routes'));
 

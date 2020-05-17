@@ -5,7 +5,7 @@ export class User {
   first_name: string;
   last_name: string;
   email: string;
-  role: string;
+  role: string | number;
   constructor(
     id: number,
     username: string,
@@ -13,7 +13,7 @@ export class User {
     first_name: string,
     last_name: string,
     email: string,
-    role: string
+    role: string | number
   ) {
     this.id = id;
     this.username = username;
