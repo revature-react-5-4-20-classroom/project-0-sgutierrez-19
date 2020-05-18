@@ -32,7 +32,7 @@ export async function getUserById(id: number): Promise<User> {
       throw new Error(`Couldn't find User with the Id: ${id}`);
     }
   } catch (e) {
-    throw new Error(`You are not authorized to view this user record. ${e}`);
+    throw new Error(e.message);
   } finally {
     client && client.release();
   }
@@ -50,6 +50,9 @@ export async function createReim(
       `SELECT * FROM reimbursement_status WHERE "status" = $1;`,
       [reimObj.status]
     );
+    if (statusResult.rows.length === 0) {
+      throw new Error(`An unexpected error occured while fetching statuses.`);
+    }
     let statusId = +statusResult.rows[0].id;
     // get type id by string
     let typeResult: QueryResult;
@@ -57,6 +60,9 @@ export async function createReim(
       `SELECT * FROM reimbursement_type WHERE "type" = $1;`,
       [reimObj.type]
     );
+    if (typeResult.rows.length === 0) {
+      throw new Error(`An unexpected error occured while fetching types.`);
+    }
     let typeId = +typeResult.rows[0].id;
     // make reimbusement
     let insertReim: QueryResult = await client.query(
@@ -75,6 +81,11 @@ export async function createReim(
     let newReimId = insertReim.rows.map((r) => {
       return r.id;
     })[0];
+    if (newReimId.length === 0) {
+      throw new Error(
+        `There was an unexpected error creating your reimbursement.`
+      );
+    }
     let result: QueryResult = await client.query(
       `SELECT reimbursements.id, users.first_name || ' ' || users.last_name AS author, amount, date_submitted, "description", 
       reimbursement_status."status" AS "status",
@@ -86,7 +97,7 @@ export async function createReim(
       WHERE reimbursements.id = $1;`,
       [newReimId]
     );
-    return result.rows.map((r) => {
+    let returnReim: Reimbursement = result.rows.map((r) => {
       return new Reimbursement(
         r.author,
         r.amount,
@@ -97,8 +108,15 @@ export async function createReim(
         r.id
       );
     })[0];
+    if (newReimId.length === 0) {
+      throw new Error(
+        `There was an unexpected error finding your new reimbursement.`
+      );
+    } else {
+      return returnReim;
+    }
   } catch (e) {
-    throw new Error(e);
+    throw new Error(e.message);
   } finally {
     client && client.release();
   }
@@ -131,13 +149,13 @@ export async function findReimById(author: number): Promise<Reimbursement[]> {
     });
     if (reimArray.length === 0) {
       throw new Error(
-        `Could not find any reimbursement requests for user ID#${author}`
+        `There were no reimbursements for the User with the ID#${author}.  Please try again with another ID.`
       );
     } else {
       return reimArray;
     }
   } catch (e) {
-    throw new Error(e);
+    throw new Error(e.message);
   } finally {
     client && client.release();
   }

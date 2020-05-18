@@ -18,9 +18,7 @@ router.post('/login', async (req: Request, res: Response) => {
       }
       res.json(user);
     } catch (e) {
-      res
-        .status(401)
-        .send(`Failed to authenticate your username and password.`);
+      res.status(401).send(e.message);
     }
   }
 });

@@ -59,13 +59,13 @@ export async function findReimByStatus(
     });
     if (reimArray.length === 0) {
       throw new Error(
-        `Could not find any reimbursement requests for your status ID#`
+        `There were no reimbursements with the status ID #${status}.  Please try again with another ID.`
       );
     } else {
       return reimArray;
     }
   } catch (e) {
-    throw new Error(e);
+    throw new Error(e.message);
   } finally {
     client && client.release();
   }
