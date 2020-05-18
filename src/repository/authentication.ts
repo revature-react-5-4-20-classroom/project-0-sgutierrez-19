@@ -29,12 +29,12 @@ export async function verifyUsernamePassword(
     if (matchingUser.length > 0) {
       return matchingUser[0];
     } else {
-      throw new Error(`Could not find matching username and password`);
+      throw new Error(
+        `Invalid Credentials: Could not find matching username and password`
+      );
     }
   } catch (e) {
-    throw new Error(
-      `Failed to validate your credentials with database.  Error Message: ${e.message}`
-    );
+    throw new Error(e.message);
   } finally {
     client && client.release();
   }

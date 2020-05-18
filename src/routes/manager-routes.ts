@@ -6,7 +6,6 @@ import {
   updateReimbursement,
 } from '../repository/manager';
 import { Reimbursement } from '../models/reimbursement';
-import { findReimById } from '../repository/employee';
 
 const router: Router = express.Router();
 
@@ -26,23 +25,18 @@ router.get(
   '/reimbursements/status/:statusId',
   async (req: Request, res: Response) => {
     let statusId: number = +req.params.statusId;
-    if (isNaN(statusId)) {
+    if (!statusId || isNaN(statusId) || statusId < 1 || statusId > 3) {
       res
         .status(400)
         .send(
           `You must pass valid number as status ID.  1 = Pending, 2 = Approved, 3 = Denied`
         );
-    } else if (statusId < 1 || statusId > 3) {
-      res
-        .status(400)
-        .send(
-          `You must pass valid number as status ID.  1 = Pending, 2 = Approved, 3 = Denied`
-        );
-    }
-    try {
-      res.json(await findReimByStatus(statusId));
-    } catch (e) {
-      res.status(400).send(e);
+    } else {
+      try {
+        res.json(await findReimByStatus(statusId));
+      } catch (e) {
+        res.status(400).send(e.message);
+      }
     }
   }
 );
