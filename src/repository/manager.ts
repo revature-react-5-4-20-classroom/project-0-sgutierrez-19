@@ -57,7 +57,7 @@ export async function findReimByStatus(
         r.id
       );
     });
-    if (reimArray.length === 0) {
+    if (reimArray === undefined || reimArray.length == 0) {
       throw new Error(
         `There were no reimbursements with the status ID #${status}.  Please try again with another ID.`
       );
@@ -77,13 +77,18 @@ export async function updateReimbursement(
 ): Promise<Reimbursement> {
   let client: PoolClient = await connectionPool.connect();
   // this will run if there was a status change passed in through the body
-  try {
-    if (updateInfo.status) {
+  if (updateInfo.status) {
+    try {
       let resolverId: number = resolver;
       let updateQuery = await makeTimestampQuery(updateInfo, resolverId);
       let result: QueryResult = await client.query(updateQuery, [
         updateInfo.reimToUpdate,
       ]);
+      if (result.rows === undefined || result.rows.length == 0) {
+        throw new Error(
+          `Could not find any reimbursements with the reimbursement ID of ${updateInfo.reimToUpdate}`
+        );
+      }
       let updatedReim: QueryResult = await client.query(
         `      
               SELECT r.id, u.first_name || ' ' || u.last_name AS "author",
@@ -97,7 +102,7 @@ export async function updateReimbursement(
               WHERE r.id = $1;`,
         [result.rows[0].id]
       );
-      return updatedReim.rows.map((r) => {
+      let updatedReimObj = updatedReim.rows.map((r) => {
         return new Reimbursement(
           r.author,
           r.amount,
@@ -109,13 +114,31 @@ export async function updateReimbursement(
           r.date_resolved,
           r.resolver
         );
-      })[0];
-    } else {
+      });
+      if (updatedReimObj === undefined || updatedReimObj.length == 0) {
+        throw new Error(
+          `Unexpected error when trying to retreive updated reimbursement`
+        );
+      } else {
+        return updatedReimObj[0];
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    } finally {
+      client && client.release();
+    }
+  } else {
+    try {
       // this will run if there's no updates to the status
       let updateQuery = await makeQuery(updateInfo);
       let result: QueryResult = await client.query(updateQuery, [
         updateInfo.reimToUpdate,
       ]);
+      if (result.rows === undefined || result.rows.length == 0) {
+        throw new Error(
+          `Could not find any reimbursements with the reimbursement ID of ${updateInfo.reimToUpdate}`
+        );
+      }
       let updatedReim: QueryResult = await client.query(
         `      
         SELECT r.id, u.first_name || ' ' || u.last_name AS "author",
@@ -127,7 +150,7 @@ export async function updateReimbursement(
         WHERE r.id = $1;`,
         [result.rows[0].id]
       );
-      return updatedReim.rows.map((r) => {
+      let updatedReimObj = updatedReim.rows.map((r) => {
         return new Reimbursement(
           r.author,
           r.amount,
@@ -137,12 +160,19 @@ export async function updateReimbursement(
           r.type,
           r.id
         );
-      })[0];
+      });
+      if (updatedReimObj === undefined || updatedReimObj.length == 0) {
+        throw new Error(
+          `Unexpected error when trying to retreive updated reimbursement`
+        );
+      } else {
+        return updatedReimObj[0];
+      }
+    } catch (e) {
+      throw new Error(e.message);
+    } finally {
+      client && client.release();
     }
-  } catch (e) {
-    throw new Error(e);
-  } finally {
-    client && client.release();
   }
 }
 
@@ -152,21 +182,19 @@ async function makeTimestampQuery(updateInfo: any, resolver: number) {
   let updateQuery: string[] = ['UPDATE reimbursements SET'];
   let sets: string[] = [];
   Object.keys(updateInfo).forEach((key: string) => {
-    if (key === 'date_resolved') {
-      // get current date:
-      let today: Date = new Date();
-      let dateSubmitted: string = `${today.getFullYear()}-${
-        today.getMonth() + 1
-      }-${today.getDay()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-      sets.push(`${key} = '${dateSubmitted}'`);
-    } else if (key === 'resolver') {
-      sets.push(`${key} === ${resolver}`);
-    } else if (key !== 'reimToUpdate' && isNaN(updateInfo[key])) {
+    if (key !== 'reimToUpdate' && isNaN(updateInfo[key])) {
       sets.push(`${key} = '${updateInfo[key]}'`);
     } else if (key !== 'reimToUpdate') {
       sets.push(`${key} = ${updateInfo[key]}`);
     }
   });
+  // get current date:
+  let today: Date = new Date();
+  let dateSubmitted: string = `${today.getFullYear()}-${
+    today.getMonth() + 1
+  }-${today.getDay()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+  sets.push(`date_resolved = '${dateSubmitted}'`);
+  sets.push(`resolver = ${resolver}`);
   updateQuery.push(sets.join(', '));
   updateQuery.push(`WHERE id = $1 RETURNING id;`);
   return updateQuery.join(' ');
