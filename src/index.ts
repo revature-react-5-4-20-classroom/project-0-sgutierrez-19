@@ -16,8 +16,8 @@ app.use(sessionMiddleware);
 // Bring in api routes
 app.use('/', authentication);
 app.use('/', employees);
-app.use('/', managers);
 app.use('/', admin);
+app.use('/', managers);
 
 app.listen(PORT, () => {
   console.log(`Server is currently running on localhost:${PORT}`);
