@@ -17,11 +17,15 @@ CREATE TABLE users (
 );
 
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
-VALUES ('adminuser', 'pworda', 'John', 'Doe', 'admin@email.com', 1); -- 1
+VALUES ('adminuser', 'pworda', 'Christina', 'Crutchley', 'admin@email.com', 1);
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
-VALUES ('fmanuser', 'pwordf', 'Maggie', 'Sue', 'fman@email.com', 2); -- 2
+VALUES ('fmanuser', 'pwordf', 'Steven', 'Gutierrez', 'fman@email.com', 2);
 INSERT INTO users(username, "password", first_name, last_name, email, "role") 
-VALUES ('empuser', 'pworde', 'Zach', 'Allen', 'emp@email.com', 3); -- 3
+VALUES ('empuser', 'pworde', 'Sam', 'Malate', 'emp@email.com', 3);
+INSERT INTO users(username, "password", first_name, last_name, email, "role") 
+VALUES ('coolname', 'secret', 'Ash', 'Ketchum', 'cool@email.com', 3);
+INSERT INTO users(username, "password", first_name, last_name, email, "role") 
+VALUES ('ambiguous', 'nottelling', 'Jill', 'Valentine', 'amb@email.com', 3);
 
 CREATE TABLE reimbursement_status (
     id SERIAL PRIMARY KEY,
@@ -52,8 +56,18 @@ CREATE TABLE reimbursements (
 );
 
 INSERT INTO reimbursements(author, amount, date_submitted, "description", "status", "type")
-VALUES (3, 30.00, '2020-05-01', 'Lunch meeting 4.23', 1, 3);
+VALUES (2, 30.00, '2020-05-01 00:00:00', 'Lunch meeting 4.23', 1, 3);
 INSERT INTO reimbursements(author, amount, date_submitted, date_resolved, "description", resolver, "status", "type")
-VALUES (3, 50.00, '2020-05-01', '2020-05-15', 'Friday night drinks', 2, 3, 4);
+VALUES (4, 50.00, '2020-05-01 00:00:00', '2020-05-15 00:00:00', 'Friday night drinks', 2, 3, 4);
+
 INSERT INTO reimbursements(author, amount, date_submitted, date_resolved, "description", resolver, "status", "type")
-VALUES (1, 100.00, '2020-04-18', '2020-05-15', 'Printer Paper and Ink', 2, 2, 4);
+VALUES (1, 100.00, '2020-04-18 00:00:00', '2020-05-12 00:00:00', 'Printer Paper and Ink', 2, 2, 4);
+
+INSERT INTO reimbursements(author, amount, date_submitted, "description", "status", "type")
+VALUES (3, 79.99, '2020-05-01 00:00:00', 'Hotel stay 4/28', 1, 1);
+
+INSERT INTO reimbursements(author, amount, date_submitted, date_resolved, "description", resolver, "status", "type")
+VALUES (1, 50.00, '2020-05-02 00:00:00', '2020-05-17 00:00:00', 'Parking ticket from meeting March 12th', 2, 3, 4);
+
+INSERT INTO reimbursements(author, amount, date_submitted, date_resolved, "description", resolver, "status", "type")
+VALUES (3, 100.00, '2020-04-10 00:00:00', '2020-04-21 00:00:00', 'Car rental 4.5-4.6', 2, 2, 2);
