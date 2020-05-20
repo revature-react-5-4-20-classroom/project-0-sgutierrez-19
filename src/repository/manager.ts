@@ -8,8 +8,8 @@ export async function getAllUsers(): Promise<User[]> {
   let client: PoolClient = await connectionPool.connect();
   try {
     let results = await client.query(
-      `SELECT * FROM users
-            INNER JOIN roles ON users."role" = roles.id;`
+      `SELECT u.id, u.username, u.password, u.first_name, u.last_name, u.email, r.role FROM users u
+      INNER JOIN roles r ON u."role" = r.id`
     );
     let userList = results.rows.map((u) => {
       return new User(

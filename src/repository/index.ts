@@ -8,8 +8,3 @@ export const connectionPool: Pool = new Pool({
   port: 5432, // db port
   max: 3,
 });
-
-// export PG_HOST=[link to AWS host]
-// export PG_USER=postgres
-// export PG_PASSWORD=
-// export PG_DATABASE=postgres

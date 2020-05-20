@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { Application } from 'express';
 import bodyparser from 'body-parser';
 import { sessionMiddleware } from './middleware/sessionMiddleware';
@@ -18,6 +18,9 @@ app.use('/', authentication);
 app.use('/', employees);
 app.use('/', admin);
 app.use('/', managers);
+app.all('*', (req: Request, res: Response) => {
+  res.status(404).send(`This url does not exist.`);
+});
 
 app.listen(PORT, () => {
   console.log(`Server is currently running on localhost:${PORT}`);
