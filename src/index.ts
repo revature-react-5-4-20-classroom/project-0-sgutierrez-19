@@ -15,7 +15,7 @@ const PORT: number = 3004;
 
 // Check if webhook works by pushing new endpoint:
 app.get('/new-endpoint', (req: Request, res: Response) => {
-  res.send('Webhooks worked!');
+  res.send('Webhooks worked for real this TIME!');
 });
 
 // app.use(corsFilter);
