@@ -7,6 +7,8 @@ import employees from './routes/employee-routes';
 import admin from './routes/admin-routes';
 import managers from './routes/manager-routes';
 import { corsFilter } from './middleware/corsFilter';
+import { connectionPool } from './repository';
+import { PoolClient, QueryResult } from 'pg';
 
 const app: Application = express();
 const PORT: number = 3004;
@@ -27,4 +29,12 @@ app.all('*', (req: Request, res: Response) => {
 
 app.listen(PORT, () => {
   console.log(`Server is currently running on localhost:${PORT}`);
+  connectionPool
+    .connect()
+    .then((client: PoolClient) => {
+      console.log('Connected to the Database');
+    })
+    .catch((err) => {
+      console.error(err.message);
+    });
 });
