@@ -6,9 +6,12 @@ import authentication from './routes/authentication';
 import employees from './routes/employee-routes';
 import admin from './routes/admin-routes';
 import managers from './routes/manager-routes';
+import { corsFilter } from './middleware/corsFilter';
 
 const app: Application = express();
-const PORT: number = 3003;
+const PORT: number = 3004;
+
+// app.use(corsFilter);
 
 app.use(bodyparser.json());
 app.use(sessionMiddleware);
