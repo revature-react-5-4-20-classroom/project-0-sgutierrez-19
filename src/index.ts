@@ -13,6 +13,11 @@ import { PoolClient, QueryResult } from 'pg';
 const app: Application = express();
 const PORT: number = 3004;
 
+// Check if webhook works by pushing new endpoint:
+app.get('/new-endpoint', (req: Request, res: Response) => {
+  res.send('Webhooks worked!');
+});
+
 // app.use(corsFilter);
 
 app.use(bodyparser.json());
