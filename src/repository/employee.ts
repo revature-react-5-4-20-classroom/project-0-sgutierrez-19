@@ -89,11 +89,12 @@ export async function createReim(
     let result: QueryResult = await client.query(
       `SELECT reimbursements.id, users.first_name || ' ' || users.last_name AS author, amount, date_submitted, "description", 
       reimbursement_status."status" AS "status",
-      reimbursement_type."type" AS "type"
+      reimbursement_type."type" AS "type", date_resolved, u2.first_name || ' ' || u2.last_name AS resolver
       FROM reimbursements
       INNER JOIN reimbursement_status ON reimbursements."status" = reimbursement_status.id
       INNER JOIN reimbursement_type ON reimbursements."type" = reimbursement_type.id
       INNER JOIN users ON reimbursements.author = users.id
+      LEFT JOIN users u2 ON reimbursements.resolver = u2.id
       WHERE reimbursements.id = $1;`,
       [newReimId]
     );
@@ -128,11 +129,12 @@ export async function findReimById(author: number): Promise<Reimbursement[]> {
   try {
     let result: QueryResult = await client.query(
       `SELECT r.id, u.first_name || ' ' || u.last_name AS "author",
-      description, amount, rt."type", rs."status", date_submitted, date_resolved
+      description, amount, rt."type", rs."status", date_submitted, date_resolved, u2.first_name || ' ' || u2.last_name AS resolver
       FROM reimbursements r
       INNER JOIN users u ON r.author = u.id
-      LEFT JOIN reimbursement_type rt ON r."type"= rt.id
-      LEFT JOIN reimbursement_status rs ON r."status" = rs.id
+      LEFT JOIN users u2 ON r.resolver = u2.id 
+      INNER JOIN reimbursement_type rt ON r."type"= rt.id
+      INNER JOIN reimbursement_status rs ON r."status" = rs.id
       WHERE r.author = $1;`,
       [author]
     );
@@ -144,7 +146,9 @@ export async function findReimById(author: number): Promise<Reimbursement[]> {
         r.description,
         r.status,
         r.type,
-        r.id
+        r.id,
+        r.date_resolved,
+        r.resolver
       );
     });
     if (reimArray.length === 0) {
