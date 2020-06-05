@@ -96,7 +96,6 @@ router.post(
         .send(`You need to provide a description for your reimbursement.`);
     } else {
       let author: number = req.session! && +req.session!.user.id;
-      console.log('From server, session id is: ', author);
       try {
         // get current date:
         let today: Date = new Date();
