@@ -46,7 +46,7 @@ VALUES ('Lodging'), ('Travel'), ('Food'), ('Other');
 CREATE TABLE reimbursements (
     id SERIAL PRIMARY KEY,
     author INTEGER NOT NULL REFERENCES users(id),
-    amount INTEGER NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
     date_submitted TIMESTAMP NOT NULL,
     date_resolved TIMESTAMP,
     "description" TEXT NOT NULL,
@@ -56,12 +56,12 @@ CREATE TABLE reimbursements (
 );
 
 INSERT INTO reimbursements(author, amount, date_submitted, "description", "status", "type")
-VALUES (2, 30.00, '2020-05-01 00:00:00', 'Lunch meeting 4.23', 1, 3);
+VALUES (2, 30.45, '2020-05-01 00:00:00', 'Lunch meeting 4.23', 1, 3);
 INSERT INTO reimbursements(author, amount, date_submitted, date_resolved, "description", resolver, "status", "type")
 VALUES (4, 50.00, '2020-05-01 00:00:00', '2020-05-15 00:00:00', 'Friday night drinks', 2, 3, 4);
 
 INSERT INTO reimbursements(author, amount, date_submitted, date_resolved, "description", resolver, "status", "type")
-VALUES (1, 100.00, '2020-04-18 00:00:00', '2020-05-12 00:00:00', 'Printer Paper and Ink', 2, 2, 4);
+VALUES (1, 100.45, '2020-04-18 00:00:00', '2020-05-12 00:00:00', 'Printer Paper and Ink', 2, 2, 4);
 
 INSERT INTO reimbursements(author, amount, date_submitted, "description", "status", "type")
 VALUES (3, 79.99, '2020-05-01 00:00:00', 'Hotel stay 4/28', 1, 1);
@@ -70,4 +70,4 @@ INSERT INTO reimbursements(author, amount, date_submitted, date_resolved, "descr
 VALUES (1, 50.00, '2020-05-02 00:00:00', '2020-05-17 00:00:00', 'Parking ticket from meeting March 12th', 2, 3, 4);
 
 INSERT INTO reimbursements(author, amount, date_submitted, date_resolved, "description", resolver, "status", "type")
-VALUES (3, 100.00, '2020-04-10 00:00:00', '2020-04-21 00:00:00', 'Car rental 4.5-4.6', 2, 2, 2);
+VALUES (3, 100.87, '2020-04-10 00:00:00', '2020-04-21 00:00:00', 'Car rental 4.5-4.6', 2, 2, 2);
