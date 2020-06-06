@@ -26,7 +26,7 @@ app.use(sessionMiddleware);
 // Bring in api routes
 app.use('/', authentication);
 app.use('/', employees);
-app.use('/', admin);
+// app.use('/', admin);
 app.use('/', managers);
 app.all('*', (req: Request, res: Response) => {
   res.status(404).send(`This url does not exist.`);
