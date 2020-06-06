@@ -31,7 +31,7 @@ router.get('/logout', function (req: any, res, next) {
       if (err) {
         return next(err);
       } else {
-        return res.redirect('/');
+        return res.end();
       }
     });
   }
