@@ -223,13 +223,23 @@ async function makeQuery(updateInfo: any) {
 }
 
 export async function checkExisting(username: string): Promise<boolean> {
-  let alreadyExists = false;
   let client: PoolClient = await connectionPool.connect();
-  let userList: QueryResult = await client.query(`SELECT * FROM users;`);
-  userList.rows.map((u) => {
-    if (u.username.toLowerCase() === username.toLowerCase()) {
-      alreadyExists = true;
+
+  try {
+    let userList: QueryResult = await client.query(
+      `
+    SELECT * FROM users
+    WHERE username = $1;`,
+      [username]
+    );
+    if (userList.rows.length >= 1) {
+      return true;
+    } else {
+      return false;
     }
-  });
-  return alreadyExists;
+  } catch (e) {
+    throw e;
+  } finally {
+    client && client.release();
+  }
 }
