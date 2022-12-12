@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/revature-react-5-4-20-classroom/project-0-sgutierrez-19#readme",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.1",
     "pg": "^8.1.0"
   },
